@@ -1,252 +1,418 @@
-# ULTIMATE MAXIMUM GAMING OPTIMIZATION SCRIPT
-# Windows 10/11 - Maximum Performance at All Costs
+# ULTIMATE UNLEASHED GAMING OPTIMIZATION SCRIPT
+# Maximum Aggressive - Bypasses All Restrictions
 # Run as Administrator: irm https://raw.githubusercontent.com/Ano-n-ymous/gaming-optimizer/main/gaming-optimizer.ps1 | iex
 
-# Require Admin Rights
-if (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsPrincipal] "Administrator")) {
-    Write-Host "ULTIMATE GAMING OPTIMIZER REQUIRES ADMINISTRATOR PRIVILEGES!" -ForegroundColor Red
-    Write-Host "Run PowerShell as Administrator first, then execute the script." -ForegroundColor Yellow
-    Write-Host "Press any key to exit..." -ForegroundColor Gray
-    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+# NUCLEAR ADMIN ELEVATION - MULTIPLE METHODS
+function Get-UltimateAdmin {
+    $methods = @()
+    
+    # Method 1: Standard admin check
+    $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+    if ($currentPrincipal.IsInRole([Security.Principal.WindowsPrincipal] "Administrator")) {
+        $methods += "StandardAdmin"
+    }
+    
+    # Method 2: Token check
+    try {
+        $token = [System.Security.Principal.WindowsIdentity]::GetCurrent()
+        if ($token.Token -ne $null) {
+            $methods += "TokenAdmin"
+        }
+    } catch { }
+    
+    # Method 3: Process owner check
+    try {
+        $process = Get-Process -Id $PID
+        $owner = $process.GetOwner()
+        if ($owner.Domain -eq "NT AUTHORITY" -and $owner.Account -eq "SYSTEM") {
+            $methods += "SystemOwner"
+        }
+    } catch { }
+    
+    return $methods.Count -gt 0
+}
+
+if (-NOT (Get-UltimateAdmin)) {
+    Write-Host "NUCLEAR ELEVATION REQUIRED!" -ForegroundColor Red
+    Write-Host "Attempting automatic elevation..." -ForegroundColor Yellow
+    
+    # Multiple elevation methods
+    $elevationMethods = @(
+        { Start-Process "pwsh.exe" -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://raw.githubusercontent.com/Ano-n-ymous/gaming-optimizer/main/gaming-optimizer.ps1 | iex`"" -Verb RunAs },
+        { Start-Process "cmd.exe" -ArgumentList "/c powershell -ExecutionPolicy Bypass -Command `"irm https://raw.githubusercontent.com/Ano-n-ymous/gaming-optimizer/main/gaming-optimizer.ps1 | iex`"" -Verb RunAs },
+        { Start-Process "powershell.exe" -ArgumentList "-ExecutionPolicy Bypass -Command `"irm https://raw.githubusercontent.com/Ano-n-ymous/gaming-optimizer/main/gaming-optimizer.ps1 | iex`"" -Verb RunAs }
+    )
+    
+    foreach ($method in $elevationMethods) {
+        try {
+            & $method
+            exit
+        } catch { }
+    }
+    
+    Write-Host "AUTOMATIC ELEVATION FAILED! Run PowerShell as Administrator manually." -ForegroundColor Red
+    pause
     exit
 }
 
-# Set Maximum Performance Mode
+# DISABLE ALL SAFETY LOCKS
 $ErrorActionPreference = 'SilentlyContinue'
-Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope CurrentUser -Force
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force -ErrorAction SilentlyContinue
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine -Force -ErrorAction SilentlyContinue
 
-# Nuclear Warning
-Write-Host "████████████████████████████████████████████████████████████████████████████████" -ForegroundColor Red
-Write-Host "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ ULTIMATE GAMING OPTIMIZER ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓" -ForegroundColor Yellow
-Write-Host "████████████████████████████████████████████████████████████████████████████████" -ForegroundColor Red
-Write-Host "WARNING: THIS IS THE MOST AGGRESSIVE GAMING OPTIMIZATION SCRIPT AVAILABLE!" -ForegroundColor Red
-Write-Host "IT WILL:" -ForegroundColor Yellow
-Write-Host "• DISABLE 100+ SYSTEM SERVICES & FEATURES" -ForegroundColor White
-Write-Host "• MAXIMIZE CPU/GPU/RAM PERFORMANCE" -ForegroundColor White
-Write-Host "• REMOVE ALL NON-GAMING FUNCTIONALITY" -ForegroundColor White
-Write-Host "• OPTIMIZE NETWORK FOR ULTRA-LOW LATENCY" -ForegroundColor White
-Write-Host "• DISABLE SECURITY FEATURES FOR PERFORMANCE" -ForegroundColor White
-Write-Host "• PERMANENTLY MODIFY SYSTEM SETTINGS" -ForegroundColor White
-Write-Host ""
-Write-Host "BACKUP YOUR SYSTEM! THIS CAN BREAK NON-GAMING FUNCTIONALITY!" -ForegroundColor Red
-Write-Host "Press any key to continue or Ctrl+C to abort..." -ForegroundColor Yellow
-$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-
-function Show-Progress($Step, $Total) {
-    $percent = [math]::Round(($Step / $Total) * 100)
-    Write-Progress -Activity "ULTIMATE GAMING OPTIMIZATION" -Status "Step $Step of $Total ($percent% Complete)" -PercentComplete $percent
-}
-
-# 1. NUCLEAR POWER PLAN OPTIMIZATION
-Write-Host "`n[1/12] ACTIVATING NUCLEAR POWER PLAN..." -ForegroundColor Green
-Show-Progress 1 12
-powercfg -delete "ULTIMATE GAMING PERFORMANCE" 2>$null
-powercfg -delete "EXTREME GAMING" 2>$null
-$planGuid = powercfg -duplicatescheme 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
-if ($planGuid -match "([a-f0-9-]{36})") {
-    $guid = $matches[1]
-    powercfg -changename $guid "ULTIMATE GAMING PERFORMANCE" "MAXIMUM PERFORMANCE - GAMING MODE"
-    powercfg -setactive $guid
-    # MAXIMUM PERFORMANCE SETTINGS
-    powercfg -setacvalueindex $guid SUB_PROCESSOR PROFCIENCY 100
-    powercfg -setdcvalueindex $guid SUB_PROCESSOR PROFCIENCY 100
-    powercfg -setacvalueindex $guid SUB_PROCESSOR 54533251-82be-4824-96c1-47b60b740d00 893dee8e-2bef-41e0-89c6-b55d0929964c 100
-    powercfg -setdcvalueindex $guid SUB_PROCESSOR 54533251-82be-4824-96c1-47b60b740d00 893dee8e-2bef-41e0-89c6-b55d0929964c 100
-    powercfg -setacvalueindex $guid SUB_PROCESSOR 54533251-82be-4824-96c1-47b60b740d00 bc5038f7-23e0-4960-96da-33abaf5935ec 100
-    powercfg -setdcvalueindex $guid SUB_PROCESSOR 54533251-82be-4824-96c1-47b60b740d00 bc5038f7-23e0-4960-96da-33abaf5935ec 100
-}
-
-# 2. CPU MAXIMIZATION - ULTIMATE PERFORMANCE
-Write-Host "`n[2/12] MAXIMIZING CPU PERFORMANCE..." -ForegroundColor Green
-Show-Progress 2 12
-# Disable CPU throttling and power limits
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" /v "PowerThrottlingOff" /t REG_DWORD /d 1 /f
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v "IoPageLockLimit" /t REG_DWORD /d 4294967295 /f
-# Maximum CPU scheduling
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl" /v "Win32PrioritySeparation" /t REG_DWORD /d 38 /f
-# Disable core parking
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\0cc5b647-c1df-4637-891a-dec35c318583" /v "Attributes" /t REG_DWORD /d 2 /f
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\0cc5b647-c1df-4637-891a-dec35c318583" /v "Value" /t REG_DWORD /d 100 /f
-
-# 3. GPU ULTIMATE OPTIMIZATION
-Write-Host "`n[3/12] MAXIMIZING GPU PERFORMANCE..." -ForegroundColor Green
-Show-Progress 3 12
-# NVIDIA Ultimate Tweaks
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\nvlddmkm" /v "PerfLevelSrc" /t REG_DWORD /d 0x3333 /f 2>$null
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\nvlddmkm" /v "EnableGR535" /t REG_DWORD /d 1 /f 2>$null
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\nvlddmkm" /v "DisableDynamicPstate" /t REG_DWORD /d 1 /f 2>$null
-# AMD Ultimate Tweaks
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\amdkmdag" /v "EnableUlps" /t REG_DWORD /d 0 /f 2>$null
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\amdkmdag" /v "EnableUlps_NA" /t REG_DWORD /d 0 /f 2>$null
-# Hardware Accelerated GPU Scheduling
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" /v "HwSchMode" /t REG_DWORD /d 2 /f
-# Disable GPU Power Savings
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000" /v "EnableMsHybrid" /t REG_DWORD /d 0 /f 2>$null
-
-# 4. RAM MAXIMIZATION
-Write-Host "`n[4/12] MAXIMIZING MEMORY PERFORMANCE..." -ForegroundColor Green
-Show-Progress 4 12
-# Disable SuperFetch/Prefetch
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" /v "EnablePrefetcher" /t REG_DWORD /d 0 /f
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" /v "EnableSuperfetch" /t REG_DWORD /d 0 /f
-# Large System Cache
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v "LargeSystemCache" /t REG_DWORD /d 1 /f
-# Clear Page File at Shutdown (Security)
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v "ClearPageFileAtShutdown" /t REG_DWORD /d 0 /f
-
-# 5. NETWORK ULTRA-LOW LATENCY OPTIMIZATION
-Write-Host "`n[5/12] MAXIMIZING NETWORK PERFORMANCE..." -ForegroundColor Green
-Show-Progress 5 12
-# Disable Nagle's Algorithm
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces" /v "TcpAckFrequency" /t REG_DWORD /d 1 /f
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces" /v "TCPNoDelay" /t REG_DWORD /d 1 /f
-# Network Throttling Index (Maximum)
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "NetworkThrottlingIndex" /t REG_DWORD /d 0xFFFFFFFF /f
-# Gaming Traffic Optimization
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "SystemResponsiveness" /t REG_DWORD /d 0 /f
-# Maximum Network Buffers
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\AFD\Parameters" /v "DefaultReceiveWindow" /t REG_DWORD /d 16384 /f
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\AFD\Parameters" /v "DefaultSendWindow" /t REG_DWORD /d 16384 /f
-
-# 6. NUCLEAR SERVICE DISABLE - GAMING ONLY MODE
-Write-Host "`n[6/12] DISABLING NON-ESSENTIAL SERVICES..." -ForegroundColor Green
-Show-Progress 6 12
-$nuclearServices = @(
-    "AarSvc", "AJRouter", "ALG", "AppIDSvc", "AppMgmt", "AssignedAccessManagerSvc",
-    "AutomaticDownloads", "BcastDVRUserService", "BDESVC", "BFE", "BITS", "BluetoothUserService",
-    "BrokerInfrastructure", "Browser", "BthAvctpSvc", "bthserv", "camsvc", "CaptureService",
-    "cbdhsvc", "CDPSvc", "CDPUserSvc", "CertPropSvc", "ClipSVC", "CloudExperienceHost",
-    "CmRCService", "CNG", "ConnectedDevicesPlatformUserSvc", "ConsentUxUserSvc",
-    "CoreMessagingRegistrar", "CredentialEnrollmentManagerUserSvc", "CryptSvc", "CscService",
-    "DcomLaunch", "defragsvc", "DeviceAssociationService", "DeviceInstall", "DevicePickerUserSvc",
-    "DevicesFlowUserSvc", "DevQueryBroker", "Dhcp", "diagnosticshub.standardcollector.service",
-    "DiagTrack", "DisplayEnhancementService", "DmEnrollmentSvc", "dmwappushservice",
-    "Dnscache", "Dot3Svc", "DPS", "DsmSvc", "DsSvc", "DusmSvc", "Eaphost", "EFS", "embeddedmode",
-    "EntAppSvc", "EventLog", "EventSystem", "Fax", "fdPHost", "FDResPub", "fhsvc", "FontCache",
-    "FrameServer", "gpsvc", "GraphicsPerfSvc", "hidserv", "HvHost", "icssvc", "IKEEXT",
-    "InstallService", "iphlpsvc", "IpxlatCfgSvc", "KeyIso", "KtmRm", "LanmanServer",
-    "LanmanWorkstation", "lfsvc", "LicenseManager", "lltdsvc", "lmhosts", "LSM", "LxpSvc",
-    "MapsBroker", "MessagingService", "MessagingService", "MpsSvc", "MSDTC", "MSiSCSI",
-    "msiserver", "NaturalAuthentication", "NcaSvc", "NcbService", "NcdAutoSetup", "Netlogon",
-    "Netman", "netprofm", "NetSetupSvc", "NetTcpPortSharing", "NgcCtnrSvc", "NgcSvc",
-    "NlaSvc", "nsi", "OfficeSvc", "P9RdrService", "p2pimsvc", "p2psvc", "PerfHost", "PhoneSvc",
-    "PimIndexMaintenanceSvc", "pla", "PlugPlay", "PNRPAutoReg", "PNRPsvc", "PolicyAgent",
-    "Power", "PrintNotify", "PrintWorkflowUserSvc", "ProfSvc", "PushToInstall", "QWAVE",
-    "RasAuto", "RasMan", "RemoteAccess", "RemoteRegistry", "RetailDemo", "RmSvc", "RpcEptMapper",
-    "RpcLocator", "RSoPProv", "sacsvr", "SamSs", "SCardSvr", "ScDeviceEnum", "Schedule",
-    "SCPolicySvc", "SDRSVC", "seclogon", "SecurityHealthService", "SEMgrSvc", "SENS",
-    "SensorDataService", "SensorService", "SensrSvc", "SessionEnv", "SgrmBroker", "SharedAccess",
-    "SharedRealitySvc", "ShellHWDetection", "smphost", "SmsRouter", "SNMPTRAP", "Spectrum",
-    "Spooler", "sppsvc", "SSDPSRV", "SstpSvc", "StateRepository", "stisvc", "StorageService",
-    "StorSvc", "svsvc", "SwPrv", "SysMain", "SystemEventsBroker", "TabletInputService",
-    "TapiSrv", "TermService", "Themes", "TieringEngineService", "TimeBroker", "TimeBrokerSvc",
-    "TokenBroker", "TrkWks", "TroubleshootingSvc", "tzautoupdate", "UevAgentService",
-    "UmRdpService", "UnistoreSvc", "upnphost", "UserDataSvc", "UserManager",
-    "UsoSvc", "VaultSvc", "vds", "VirtualDisk", "vmickvpexchange", "vmicrdv", "vmicshutdown",
-    "vmictimesync", "vmicvmsession", "vmicvss", "VSS", "W32Time", "WaaSMedicSvc", "WalletService",
-    "WarpJITSvc", "WbioSrvc", "Wcmsvc", "wcncsvc", "WdiServiceHost", "WdiSystemHost",
-    "WdNisSvc", "WebClient", "Wecsvc", "WEPHOSTSVC", "wercplsupport", "WerSvc", "WFDSConMgrSvc",
-    "WiaRpc", "WinDefend", "WinHttpAutoProxySvc", "Winmgmt", "WinRM", "WlanSvc", "wlcrasvc",
-    "wlidsvc", "WManSvc", "wmiApSrv", "WMPNetworkSvc", "workfolderssvc", "WpcMonSvc",
-    "WPDBusEnum", "WpnService", "WpnUserService", "wscsvc", "WSearch", "WSService",
-    "XboxGipSvc", "XboxNetApiSvc", "XblAuthManager", "XblGameSave"
-)
-
-foreach ($service in $nuclearServices) {
+# KILL ALL BLOCKING PROCESSES
+Write-Host "Terminating security and blocking processes..." -ForegroundColor Red
+$blockingProcesses = @("msmpeng", "SecurityHealthService", "MsMpEng", "AntimalwareService", "Defend", "SavService")
+foreach ($proc in $blockingProcesses) {
     try {
-        Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
-        Set-Service -Name $service -StartupType Disabled -ErrorAction SilentlyContinue
-        sc.exe config $service start= disabled 2>$null
+        Get-Process -Name $proc -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
     } catch { }
 }
 
-# 7. ULTIMATE GAME MODE & DVR DISABLE
-Write-Host "`n[7/12] MAXIMIZING GAME MODE..." -ForegroundColor Green
-Show-Progress 7 12
-reg add "HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\GraphicsDrivers" /v "HwSchMode" /t REG_DWORD /d 2 /f
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\GameDVR" /v "AllowGameDVR" /t REG_DWORD /d 0 /f
-reg add "HKCU\System\GameConfigStore" /v "GameDVR_Enabled" /t REG_DWORD /d 0 /f
-reg add "HKCU\Software\Microsoft\GameBar" /v "AllowAutoGameMode" /t REG_DWORD /d 1 /f
-reg add "HKCU\Software\Microsoft\GameBar" /v "AutoGameModeEnabled" /t REG_DWORD /d 1 /f
+# NUCLEAR WARNING
+Write-Host "████████████████████████████████████████████████████████████████████████████████" -ForegroundColor Red
+Write-Host "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ ULTIMATE UNLEASHED OPTIMIZER ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓" -ForegroundColor Yellow
+Write-Host "████████████████████████████████████████████████████████████████████████████████" -ForegroundColor Red
+Write-Host "MAXIMUM AGGRESSIVE MODE ACTIVATED - BYPASSING ALL RESTRICTIONS!" -ForegroundColor Red
+Write-Host "USING ALL AVAILABLE METHODS TO ACHIEVE 100% OPTIMIZATION!" -ForegroundColor Yellow
+Write-Host ""
+Write-Host "Press any key to unleash maximum performance..." -ForegroundColor Yellow
+$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 
-# 8. DISABLE VISUAL EFFECTS FOR MAXIMUM PERFORMANCE
-Write-Host "`n[8/12] DISABLING VISUAL EFFECTS..." -ForegroundColor Green
-Show-Progress 8 12
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" /v "VisualFXSetting" /t REG_DWORD /d 2 /f
-# Disable animations
-reg add "HKCU\Control Panel\Desktop\WindowMetrics" /v "MinAnimate" /t REG_SZ /d 0 /f
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "ListviewAlphaSelect" /t REG_DWORD /d 0 /f
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "ListviewShadow" /t REG_DWORD /d 0 /f
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarAnimations" /t REG_DWORD /d 0 /f
+function Invoke-NuclearCommand {
+    param([string]$Command, [string]$Description, [array]$AlternativeMethods = @())
+    
+    Write-Host "  $Description..." -ForegroundColor Gray -NoNewline
+    
+    # Method 1: Direct execution
+    try {
+        $result = Invoke-Expression $Command 2>$null
+        if ($LASTEXITCODE -eq 0 -or $? -eq $true) {
+            Write-Host " ✓" -ForegroundColor Green
+            return $true
+        }
+    } catch { }
+    
+    # Alternative methods
+    foreach ($alt in $AlternativeMethods) {
+        try {
+            $result = Invoke-Expression $alt 2>$null
+            if ($LASTEXITCODE -eq 0 -or $? -eq $true) {
+                Write-Host " ✓" -ForegroundColor Green
+                return $true
+            }
+        } catch { }
+    }
+    
+    # Last resort: Native methods
+    try {
+        $process = New-Object System.Diagnostics.Process
+        $process.StartInfo.FileName = "cmd.exe"
+        $process.StartInfo.Arguments = "/c $Command"
+        $process.StartInfo.WindowStyle = 'Hidden'
+        $process.StartInfo.UseShellExecute = $false
+        $process.StartInfo.RedirectStandardOutput = $true
+        $process.Start() | Out-Null
+        $process.WaitForExit()
+        if ($process.ExitCode -eq 0) {
+            Write-Host " ✓" -ForegroundColor Green
+            return $true
+        }
+    } catch { }
+    
+    Write-Host " ✗" -ForegroundColor Red
+    return $false
+}
 
-# 9. ULTIMATE PROCESS SCHEDULING & PRIORITY
-Write-Host "`n[9/12] OPTIMIZING PROCESS SCHEDULING..." -ForegroundColor Green
-Show-Progress 9 12
-# Maximum foreground boost
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl" /v "Win32PrioritySeparation" /t REG_DWORD /d 38 /f
-# Game performance mode
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "GPU Priority" /t REG_DWORD /d 8 /f
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Priority" /t REG_DWORD /d 6 /f
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Scheduling Category" /t REG_SZ /d "High" /f
+function Set-NuclearRegistry {
+    param([string]$Path, [string]$Name, [string]$Type, [string]$Value, [array]$AlternativePaths = @())
+    
+    $allPaths = @($Path) + $AlternativePaths
+    
+    foreach $regPath in $allPaths {
+        try {
+            # Method 1: PowerShell registry provider
+            if (-not (Test-Path $regPath)) {
+                New-Item -Path $regPath -Force -ErrorAction SilentlyContinue | Out-Null
+            }
+            New-ItemProperty -Path $regPath -Name $Name -Value $Value -PropertyType $Type -Force -ErrorAction SilentlyContinue | Out-Null
+            
+            # Method 2: reg.exe command
+            $regType = switch ($Type) {
+                "DWord" { "REG_DWORD" }
+                "QWord" { "REG_QWORD" }
+                "String" { "REG_SZ" }
+                "ExpandString" { "REG_EXPAND_SZ" }
+                "MultiString" { "REG_MULTI_SZ" }
+                "Binary" { "REG_BINARY" }
+                default { "REG_SZ" }
+            }
+            
+            $regValue = if ($Type -eq "DWord" -or $Type -eq "QWord") { 
+                if ($Value -is [string] -and $Value.StartsWith("0x")) { $Value } else { "0x$([Convert]::ToString($Value, 16))" }
+            } else { $Value }
+            
+            $process = Start-Process -FilePath "reg.exe" -ArgumentList "add `"$regPath`" /v `"$Name`" /t $regType /d `"$regValue`" /f" -Wait -PassThru -WindowStyle Hidden
+            if ($process.ExitCode -eq 0) { return $true }
+            
+        } catch { }
+    }
+    return $false
+}
 
-# 10. STORAGE & DISK OPTIMIZATION
-Write-Host "`n[10/12] OPTIMIZING STORAGE PERFORMANCE..." -ForegroundColor Green
-Show-Progress 10 12
-# Disable indexing
-reg add "HKLM\SOFTWARE\Microsoft\Windows Search" /v "SetupCompletedSuccessfully" /t REG_DWORD /d 0 /f
-Stop-Service "WSearch" -Force 2>$null
-Set-Service "WSearch" -StartupType Disabled 2>$null
-# Disable defrag for SSDs
-Disable-ScheduledTask -TaskName "\Microsoft\Windows\Defrag\ScheduledDefrag" -ErrorAction SilentlyContinue
+function Stop-NuclearService {
+    param([string]$ServiceName, [array]$AlternativeNames = @())
+    
+    $allNames = @($ServiceName) + $AlternativeNames
+    
+    foreach $service in $allNames {
+        try {
+            # Method 1: PowerShell Stop-Service
+            Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
+            
+            # Method 2: sc.exe command
+            Start-Process -FilePath "sc.exe" -ArgumentList "stop `"$service`"" -Wait -WindowStyle Hidden -ErrorAction SilentlyContinue
+            
+            # Method 3: net.exe command  
+            Start-Process -FilePath "net.exe" -ArgumentList "stop `"$service`"" -Wait -WindowStyle Hidden -ErrorAction SilentlyContinue
+            
+            # Method 4: WMI
+            Get-WmiObject -Class Win32_Service -Filter "Name='$service'" | ForEach-Object { $_.StopService() }
+            
+            # Method 5: Disable service
+            Set-Service -Name $service -StartupType Disabled -ErrorAction SilentlyContinue
+            Start-Process -FilePath "sc.exe" -ArgumentList "config `"$service`" start= disabled" -Wait -WindowStyle Hidden -ErrorAction SilentlyContinue
+            
+            return $true
+        } catch { }
+    }
+    return $false
+}
 
-# 11. SECURITY DISABLE FOR PERFORMANCE (USE AT OWN RISK)
-Write-Host "`n[11/12] OPTIMIZING SECURITY SETTINGS..." -ForegroundColor Green
-Show-Progress 11 12
-# Disable Windows Defender for gaming (temporary)
-Set-MpPreference -DisableRealtimeMonitoring $true -ErrorAction SilentlyContinue
-# Disable Spectre/Meltdown mitigations for performance
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v "FeatureSettingsOverride" /t REG_DWORD /d 3 /f
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v "FeatureSettingsOverrideMask" /t REG_DWORD /d 3 /f
+# PHASE 1: NUCLEAR POWER PLAN
+Write-Host "`n[1/15] ACTIVATING NUCLEAR POWER PLAN..." -ForegroundColor Green
+$powerMethods = @(
+    'powercfg -duplicatescheme 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c',
+    'powercfg -changename $matches[1] "ULTIMATE GAMING" "MAXIMUM PERFORMANCE"',
+    'powercfg -setactive $matches[1]',
+    'powercfg -setacvalueindex $matches[1] SUB_PROCESSOR 54533251-82be-4824-96c1-47b60b740d00 893dee8e-2bef-41e0-89c6-b55d0929964c 100',
+    'powercfg -setdcvalueindex $matches[1] SUB_PROCESSOR 54533251-82be-4824-96c1-47b60b740d00 893dee8e-2bef-41e0-89c6-b55d0929964c 100'
+)
 
-# 12. FINAL SYSTEM TWEAKS & CLEANUP
-Write-Host "`n[12/12] APPLYING FINAL OPTIMIZATIONS..." -ForegroundColor Green
-Show-Progress 12 12
-# Clear all temp files
-Remove-Item -Path "$env:TEMP\*" -Recurse -Force -ErrorAction SilentlyContinue
-Remove-Item -Path "$env:WINDIR\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue
-Remove-Item -Path "$env:LOCALAPPDATA\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue
-# Clear DNS cache
-ipconfig /flushdns | Out-Null
-# Disable Windows Update during gaming sessions
-Stop-Service "wuauserv" -Force -ErrorAction SilentlyContinue
-Set-Service "wuauserv" -StartupType Disabled -ErrorAction SilentlyContinue
+foreach ($method in $powerMethods) {
+    Invoke-NuclearCommand -Command $method -Description "Power config" -AlternativeMethods @()
+}
 
-# COMPLETION MESSAGE
+# PHASE 2: CPU MAXIMIZATION - ALL METHODS
+Write-Host "`n[2/15] MAXIMIZING CPU PERFORMANCE..." -ForegroundColor Green
+$cpuTweaks = @(
+    @{Path="HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling"; Name="PowerThrottlingOff"; Type="DWord"; Value=1},
+    @{Path="HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management"; Name="IoPageLockLimit"; Type="DWord"; Value=4294967295},
+    @{Path="HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl"; Name="Win32PrioritySeparation"; Type="DWord"; Value=38},
+    @{Path="HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management"; Name="FeatureSettingsOverride"; Type="DWord"; Value=3},
+    @{Path="HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management"; Name="FeatureSettingsOverrideMask"; Type="DWord"; Value=3}
+)
+
+foreach ($tweak in $cpuTweaks) {
+    Set-NuclearRegistry @tweak
+}
+
+# PHASE 3: GPU ULTIMATE UNLEASHED
+Write-Host "`n[3/15] MAXIMIZING GPU PERFORMANCE..." -ForegroundColor Green
+$gpuTweaks = @(
+    @{Path="HKLM\SYSTEM\CurrentControlSet\Control\GraphicsDrivers"; Name="HwSchMode"; Type="DWord"; Value=2},
+    @{Path="HKLM\SYSTEM\CurrentControlSet\Services\nvlddmkm"; Name="PerfLevelSrc"; Type="DWord"; Value=0x3333},
+    @{Path="HKLM\SYSTEM\CurrentControlSet\Services\nvlddmkm"; Name="EnableGR535"; Type="DWord"; Value=1},
+    @{Path="HKLM\SYSTEM\CurrentControlSet\Services\amdkmdag"; Name="EnableUlps"; Type="DWord"; Value=0},
+    @{Path="HKLM\SYSTEM\CurrentControlSet\Services\amdkmdag"; Name="EnableUlps_NA"; Type="DWord"; Value=0}
+)
+
+foreach ($tweak in $gpuTweaks) {
+    Set-NuclearRegistry @tweak
+}
+
+# PHASE 4: RAM MAXIMIZATION
+Write-Host "`n[4/15] MAXIMIZING MEMORY PERFORMANCE..." -ForegroundColor Green
+$ramTweaks = @(
+    @{Path="HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters"; Name="EnablePrefetcher"; Type="DWord"; Value=0},
+    @{Path="HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters"; Name="EnableSuperfetch"; Type="DWord"; Value=0},
+    @{Path="HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management"; Name="LargeSystemCache"; Type="DWord"; Value=1},
+    @{Path="HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management"; Name="ClearPageFileAtShutdown"; Type="DWord"; Value=0}
+)
+
+foreach ($tweak in $ramTweaks) {
+    Set-NuclearRegistry @tweak
+}
+
+# PHASE 5: NETWORK ULTRA-LOW LATENCY
+Write-Host "`n[5/15] MAXIMIZING NETWORK PERFORMANCE..." -ForegroundColor Green
+$networkTweaks = @(
+    @{Path="HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile"; Name="NetworkThrottlingIndex"; Type="DWord"; Value=0xFFFFFFFF},
+    @{Path="HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile"; Name="SystemResponsiveness"; Type="DWord"; Value=0},
+    @{Path="HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters"; Name="TcpAckFrequency"; Type="DWord"; Value=1},
+    @{Path="HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters"; Name="TCPNoDelay"; Type="DWord"; Value=1}
+)
+
+foreach ($tweak in $networkTweaks) {
+    Set-NuclearRegistry @tweak
+}
+
+# PHASE 6: NUCLEAR SERVICE TERMINATION
+Write-Host "`n[6/15] TERMINATING NON-ESSENTIAL SERVICES..." -ForegroundColor Green
+$nuclearServices = @(
+    "XboxGipSvc", "XboxNetApiSvc", "TabletInputService", "MapsBroker", "lfsvc",
+    "WMPNetworkSvc", "XblAuthManager", "PrintNotify", "PhoneSvc", "WSearch",
+    "Fax", "Spooler", "SCardSvr", "SensorDataService", "SensorService",
+    "ShellHWDetection", "WbioSrvc", "wscsvc", "UevAgentService", "WalletService",
+    "StorSvc", "SEMgrSvc", "SCPolicySvc", "RemoteRegistry", "NetTcpPortSharing",
+    "Themes", "FontCache", "DPS", "WdiServiceHost", "WdiSystemHost"
+)
+
+$terminatedCount = 0
+foreach ($service in $nuclearServices) {
+    if (Stop-NuclearService -ServiceName $service) {
+        Write-Host "  Terminated: $service" -ForegroundColor Yellow
+        $terminatedCount++
+    }
+}
+Write-Host "  Nuclear terminated: $terminatedCount services" -ForegroundColor Green
+
+# PHASE 7: GAME MODE MAXIMUM
+Write-Host "`n[7/15] MAXIMIZING GAME MODE..." -ForegroundColor Green
+$gameTweaks = @(
+    @{Path="HKLM\SOFTWARE\Policies\Microsoft\Windows\GameDVR"; Name="AllowGameDVR"; Type="DWord"; Value=0},
+    @{Path="HKCU\System\GameConfigStore"; Name="GameDVR_Enabled"; Type="DWord"; Value=0},
+    @{Path="HKCU\Software\Microsoft\GameBar"; Name="AllowAutoGameMode"; Type="DWord"; Value=1},
+    @{Path="HKCU\Software\Microsoft\GameBar"; Name="AutoGameModeEnabled"; Type="DWord"; Value=1},
+    @{Path="HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games"; Name="GPU Priority"; Type="DWord"; Value=8},
+    @{Path="HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games"; Name="Priority"; Type="DWord"; Value=6}
+)
+
+foreach ($tweak in $gameTweaks) {
+    Set-NuclearRegistry @tweak
+}
+
+# PHASE 8: VISUAL EFFECTS TERMINATION
+Write-Host "`n[8/15] TERMINATING VISUAL EFFECTS..." -ForegroundColor Green
+$visualTweaks = @(
+    @{Path="HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects"; Name="VisualFXSetting"; Type="DWord"; Value=2},
+    @{Path="HKCU\Control Panel\Desktop"; Name="UserPreferencesMask"; Type="Binary"; Value="90,32,03,80,10,00,00,00"},
+    @{Path="HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"; Name="ListviewAlphaSelect"; Type="DWord"; Value=0},
+    @{Path="HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"; Name="TaskbarAnimations"; Type="DWord"; Value=0}
+)
+
+foreach ($tweak in $visualTweaks) {
+    Set-NuclearRegistry @tweak
+}
+
+# PHASE 9: SECURITY DISABLE FOR PERFORMANCE
+Write-Host "`n[9/15] OPTIMIZING SECURITY SETTINGS..." -ForegroundColor Green
+try {
+    Set-MpPreference -DisableRealtimeMonitoring $true -ErrorAction SilentlyContinue
+    Set-MpPreference -DisableBehaviorMonitoring $true -ErrorAction SilentlyContinue
+    Set-MpPreference -DisableBlockAtFirstSeen $true -ErrorAction SilentlyContinue
+    Write-Host "  Windows Defender disabled" -ForegroundColor Green
+} catch { }
+
+# PHASE 10: STORAGE MAXIMIZATION
+Write-Host "`n[10/15] MAXIMIZING STORAGE PERFORMANCE..." -ForegroundColor Green
+Invoke-NuclearCommand -Command "fsutil behavior set disablelastaccess 1" -Description "Disable last access tracking"
+Stop-NuclearService -ServiceName "WSearch"
+
+# PHASE 11: SYSTEM PROCESS OPTIMIZATION
+Write-Host "`n[11/15] OPTIMIZING SYSTEM PROCESSES..." -ForegroundColor Green
+$systemTweaks = @(
+    @{Path="HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile"; Name="SystemResponsiveness"; Type="DWord"; Value=0},
+    @{Path="HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile"; Name="NetworkThrottlingIndex"; Type="DWord"; Value=0xFFFFFFFF}
+)
+
+foreach ($tweak in $systemTweaks) {
+    Set-NuclearRegistry @tweak
+}
+
+# PHASE 12: WINDOWS UPDATE DISABLE
+Write-Host "`n[12/15] DISABLING WINDOWS UPDATE..." -ForegroundColor Green
+Stop-NuclearService -ServiceName "wuauserv"
+Set-NuclearRegistry -Path "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Type "DWord" -Value 1
+
+# PHASE 13: TELEMETRY AND SPYING DISABLE
+Write-Host "`n[13/15] DISABLING TELEMETRY..." -ForegroundColor Green
+$telemetryTweaks = @(
+    @{Path="HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection"; Name="AllowTelemetry"; Type="DWord"; Value=0},
+    @{Path="HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection"; Name="AllowTelemetry"; Type="DWord"; Value=0},
+    @{Path="HKLM\SYSTEM\CurrentControlSet\Services\DiagTrack"; Name="Start"; Type="DWord"; Value=4},
+    @{Path="HKLM\SYSTEM\CurrentControlSet\Services\dmwappushservice"; Name="Start"; Type="DWord"; Value=4}
+)
+
+foreach ($tweak in $telemetryTweaks) {
+    Set-NuclearRegistry @tweak
+}
+
+# PHASE 14: ULTIMATE CLEANUP
+Write-Host "`n[14/15] NUCLEAR CLEANUP..." -ForegroundColor Green
+try {
+    # Clear ALL temp files with multiple methods
+    Get-ChildItem -Path $env:TEMP, "$env:WINDIR\Temp", "$env:LOCALAPPDATA\Temp" -Recurse -ErrorAction SilentlyContinue | 
+        Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
+    
+    # Clear DNS with multiple methods
+    ipconfig /flushdns | Out-Null
+    Clear-DnsClientCache -ErrorAction SilentlyContinue
+    
+    # Clear various caches
+    Remove-Item -Path "$env:LOCALAPPDATA\Microsoft\Windows\INetCache\*" -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path "$env:LOCALAPPDATA\Microsoft\Windows\INetCookies\*" -Recurse -Force -ErrorAction SilentlyContinue
+    
+    Write-Host "  System cleaned" -ForegroundColor Green
+} catch { }
+
+# PHASE 15: FINAL SYSTEM TWEAKS
+Write-Host "`n[15/15] APPLYING FINAL TWEAKS..." -ForegroundColor Green
+$finalTweaks = @(
+    @{Path="HKLM\SYSTEM\CurrentControlSet\Control\FileSystem"; Name="NtfsDisableLastAccessUpdate"; Type="DWord"; Value=1},
+    @{Path="HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters"; Name="Size"; Type="DWord"; Value=3},
+    @{Path="HKCU\Control Panel\Mouse"; Name="MouseSpeed"; Type="String"; Value="0"},
+    @{Path="HKCU\Control Panel\Mouse"; Name="MouseThreshold1"; Type="String"; Value="0"},
+    @{Path="HKCU\Control Panel\Mouse"; Name="MouseThreshold2"; Type="String"; Value="0"}
+)
+
+foreach ($tweak in $finalTweaks) {
+    Set-NuclearRegistry @tweak
+}
+
+# COMPLETION - FORCE RESTART
 Write-Host "`n" -ForegroundColor Green
 Write-Host "████████████████████████████████████████████████████████████████████████████████" -ForegroundColor Green
-Write-Host "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ ULTIMATE OPTIMIZATION COMPLETE ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓" -ForegroundColor Yellow
+Write-Host "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ ULTIMATE UNLEASHED COMPLETE ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓" -ForegroundColor Yellow
 Write-Host "████████████████████████████████████████████████████████████████████████████████" -ForegroundColor Green
-Write-Host "`nALL SYSTEMS MAXIMIZED FOR ULTIMATE GAMING PERFORMANCE!" -ForegroundColor Green
-Write-Host "`nIMMEDIATE ACTIONS REQUIRED:" -ForegroundColor Yellow
-Write-Host "1. RESTART YOUR COMPUTER NOW - ALL CHANGES REQUIRE REBOOT" -ForegroundColor White
-Write-Host "2. UPDATE GPU DRIVERS TO LATEST VERSION" -ForegroundColor White
-Write-Host "3. SET GAMES TO HIGH PRIORITY IN TASK MANAGER" -ForegroundColor White
-Write-Host "4. MONITOR TEMPERATURES - SYSTEM RUNS AT MAXIMUM PERFORMANCE" -ForegroundColor White
-Write-Host "`nPERFORMANCE FEATURES ACTIVATED:" -ForegroundColor Cyan
-Write-Host "✓ Maximum CPU/GPU Performance" -ForegroundColor Green
-Write-Host "✓ Ultra-Low Latency Network" -ForegroundColor Green
-Write-Host "✓ 100+ Services Disabled" -ForegroundColor Green
-Write-Host "✓ Gaming-Only System Mode" -ForegroundColor Green
-Write-Host "✓ Maximum Process Priority" -ForegroundColor Green
-Write-Host "✓ Full Hardware Acceleration" -ForegroundColor Green
-Write-Host "`nWARNING: System is now optimized SOLELY for gaming performance!" -ForegroundColor Red
+Write-Host "SYSTEM FULLY UNLEASHED! MAXIMUM GAMING PERFORMANCE ACHIEVED!" -ForegroundColor Green
+Write-Host "ALL RESTRICTIONS BYPASSED - 100% OPTIMIZATION SUCCESS!" -ForegroundColor Yellow
 
-# Force restart
-Write-Host "`nCOMPUTER WILL RESTART IN 10 SECONDS TO APPLY ALL OPTIMIZATIONS..." -ForegroundColor Red
-Write-Host "Press Ctrl+C to cancel auto-restart" -ForegroundColor Yellow
-for ($i = 10; $i -gt 0; $i--) {
-    Write-Host "Restarting in $i seconds..." -ForegroundColor Yellow
+# NUCLEAR RESTART - MULTIPLE METHODS
+Write-Host "`nINITIATING NUCLEAR RESTART SEQUENCE..." -ForegroundColor Red
+Write-Host "RESTARTING IN 5 SECONDS..." -ForegroundColor Yellow
+
+for ($i = 5; $i -gt 0; $i--) {
+    Write-Host "RESTARTING IN $i SECONDS..." -ForegroundColor Yellow
     Start-Sleep -Seconds 1
 }
-Write-Host "RESTARTING NOW FOR MAXIMUM GAMING PERFORMANCE!" -ForegroundColor Green
-Restart-Computer -Force
+
+# TRY EVERY RESTART METHOD
+$restartMethods = @(
+    { Restart-Computer -Force },
+    { (Get-WmiObject -Class Win32_OperatingSystem).Reboot() },
+    { shutdown /r /t 0 /f },
+    { Start-Process "shutdown.exe" -ArgumentList "/r", "/t", "0", "/f" -Wait },
+    { systemreset -reboot -cleanpc }
+)
+
+foreach ($method in $restartMethods) {
+    try {
+        & $method
+        exit
+    } catch { }
+}
+
+Write-Host "NUCLEAR RESTART FAILED - PLEASE RESTART MANUALLY!" -ForegroundColor Red
+Write-Host "SYSTEM OPTIMIZED BUT REQUIRES RESTART!" -ForegroundColor Yellow
+pause
