@@ -1,2 +1,2 @@
 ```
-irm https://raw.githubusercontent.com/yourusername/yourrepo/main/gaming-optimizer.ps1 | iex
+irm https://raw.githubusercontent.com/Ano-n-ymous/yourrepo/main/gaming-optimizer.ps1 | iex
