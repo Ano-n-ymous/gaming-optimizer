@@ -20,8 +20,7 @@ The most aggressive **Windows gaming optimization script** ever created.
 
 ### 🧩 Advanced Features
 - **Multi-Method Execution** — Bypasses all restrictions  
-- **Auto-Admin Elevation** — Always runs with maximum privileges  
-- **Nuclear Restart** — Guaranteed system reboot  
+- **Auto-Admin Elevation** — Always runs with maximum privileges   
 
 ---
 
@@ -30,6 +29,7 @@ The most aggressive **Windows gaming optimization script** ever created.
 ### Method 1: One-Line Install (Recommended)
 
     irm https://raw.githubusercontent.com/Ano-n-ymous/gaming-optimizer/main/gaming-optimizer.ps1 | iex
+**Then reboot your computer**
 
 ## 🧩 Method 2: Admin PowerShell
 
@@ -38,7 +38,7 @@ Run **PowerShell as Administrator**, then execute:
 ```powershell
 powershell -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/Ano-n-ymous/gaming-optimizer/main/gaming-optimizer.ps1 | iex"
 ```
-
+**Then reboot your computer**
 ---
 
 ## ⚠️ Important Notes
