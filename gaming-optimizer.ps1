@@ -1,7 +1,6 @@
 # Gaming Optimization Master Script for Windows 10/11
 # Requires Administrator privileges
-# Run with: irm bit.ly/win-game-opt | iex
-# (Replace with your actual repo URL)
+# Run with: irm [your-repo-url] | iex
 
 param(
     [switch]$Force = $false,
@@ -45,51 +44,43 @@ function Show-Warning {
 # System Information
 function Get-SystemInfo {
     Write-Host "`nCollecting system information..." -ForegroundColor Green
-    $computerSystem = Get-CimInstance -ClassName Win32_ComputerSystem
-    $processor = Get-CimInstance -ClassName Win32_Processor
-    $gpu = Get-CimInstance -ClassName Win32_VideoController
-    $os = Get-CimInstance -ClassName Win32_OperatingSystem
-    
-    Write-Host "System: $($computerSystem.Model)" -ForegroundColor Cyan
-    Write-Host "Processor: $($processor.Name)" -ForegroundColor Cyan
-    Write-Host "GPU: $($gpu.Name)" -ForegroundColor Cyan
-    Write-Host "OS: $($os.Caption) $($os.Version)" -ForegroundColor Cyan
-    Write-Host "Memory: $([math]::Round($computerSystem.TotalPhysicalMemory/1GB, 2)) GB" -ForegroundColor Cyan
+    try {
+        $computerSystem = Get-CimInstance -ClassName Win32_ComputerSystem -ErrorAction Stop
+        $processor = Get-CimInstance -ClassName Win32_Processor -ErrorAction Stop
+        $gpu = Get-CimInstance -ClassName Win32_VideoController -ErrorAction Stop
+        $os = Get-CimInstance -ClassName Win32_OperatingSystem -ErrorAction Stop
+        
+        Write-Host "System: $($computerSystem.Model)" -ForegroundColor Cyan
+        Write-Host "Processor: $($processor.Name)" -ForegroundColor Cyan
+        Write-Host "GPU: $($gpu.Name)" -ForegroundColor Cyan
+        Write-Host "OS: $($os.Caption) $($os.Version)" -ForegroundColor Cyan
+        Write-Host "Memory: $([math]::Round($computerSystem.TotalPhysicalMemory/1GB, 2)) GB" -ForegroundColor Cyan
+    } catch {
+        Write-Host "Could not retrieve complete system information" -ForegroundColor Red
+    }
 }
 
 # Create Ultimate Power Plan
 function Optimize-PowerPlan {
     Write-Host "`nCreating Ultimate Gaming Power Plan..." -ForegroundColor Green
     
-    # Remove existing plan if exists
-    powercfg -delete "Ultimate Gaming Performance" 2>$null
-    
-    # Create new power plan from High Performance
-    $powerPlanGuid = powercfg -duplicatescheme 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
-    if ($powerPlanGuid -match "([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})") {
-        $planGuid = $matches[1]
-        powercfg -changename $planGuid "Ultimate Gaming Performance" "Maximum performance for gaming"
+    try {
+        # Remove existing plan if exists
+        powercfg -delete "Ultimate Gaming Performance" 2>$null
         
-        # Set as active
-        powercfg -setactive $planGuid
-        
-        # Power plan settings
-        $settings = @(
-            "SUB_PROCESSOR 0cc5b647-c1df-4637-891a-dec35c318583 893dee8e-2bef-41e0-89c6-b55d0929964c 100", # Processor performance boost mode - Aggressive
-            "SUB_PROCESSOR 54533251-82be-4824-96c1-47b60b740d00 bc5038f7-23e0-4960-96da-33abaf5935ec 100", # Maximum processor state - 100%
-            "SUB_PROCESSOR 54533251-82be-4824-96c1-47b60b740d00 893dee8e-2bef-41e0-89c6-b55d0929964c 100", # Minimum processor state - 100%
-            "SUB_PROCESSOR 54533251-82be-4824-96c1-47b60b740d00 94d3a615-a899-4ac5-ae2b-e4d8f634367f 0",   # Processor performance core parking min cores - 100%
-            "SUB_GRAPHICS 5fb92a4e-2e66-4e6f-9509-44f162e38b6f 5d76a2ca-e8c0-402f-a133-2158492d58ad 1",    # GPU preference - High Performance
-            "SUB_GRAPHICS 5fb92a4e-2e66-4e6f-9509-44f162e38b6f e48a2c5c-8299-4c70-97a3-1b543c83ea0c 1"     # Hardware accelerated GPU scheduling - Enabled
-        )
-        
-        foreach ($setting in $settings) {
-            powercfg -setacvalueindex $planGuid $setting.Split(' ')[0] $setting.Split(' ')[1] $setting.Split(' ')[2] $setting.Split(' ')[3]
-            powercfg -setdcvalueindex $planGuid $setting.Split(' ')[0] $setting.Split(' ')[1] $setting.Split(' ')[2] $setting.Split(' ')[3]
+        # Create new power plan from High Performance
+        $powerPlanGuid = powercfg -duplicatescheme 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
+        if ($powerPlanGuid -match "([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})") {
+            $planGuid = $matches[1]
+            powercfg -changename $planGuid "Ultimate Gaming Performance" "Maximum performance for gaming"
+            
+            # Set as active
+            powercfg -setactive $planGuid
+            
+            Write-Host "Ultimate Gaming Power Plan activated!" -ForegroundColor Green
         }
-        
-        powercfg -S $planGuid
-        Write-Host "Ultimate Gaming Power Plan activated!" -ForegroundColor Green
+    } catch {
+        Write-Host "Power plan optimization failed: $_" -ForegroundColor Red
     }
 }
 
@@ -97,34 +88,46 @@ function Optimize-PowerPlan {
 function Optimize-GPU {
     Write-Host "`nOptimizing GPU settings..." -ForegroundColor Green
     
-    # NVIDIA Optimizations (if NVIDIA GPU present)
-    $nvidiaPath = "HKLM:\SYSTEM\CurrentControlSet\Services\nvlddmkm"
-    if (Test-Path $nvidiaPath) {
-        Write-Host "Applying NVIDIA optimizations..." -ForegroundColor Yellow
+    try {
+        # NVIDIA Optimizations (if NVIDIA GPU present)
+        $nvidiaPath = "HKLM:\SYSTEM\CurrentControlSet\Services\nvlddmkm"
+        if (Test-Path $nvidiaPath) {
+            Write-Host "Applying NVIDIA optimizations..." -ForegroundColor Yellow
+            
+            $nvidiaSettings = @(
+                @{Path = $nvidiaPath; Name = "UsePlatformClock"; Type = "DWord"; Value = 0},
+                @{Path = $nvidiaPath; Name = "EnableGR535"; Type = "DWord"; Value = 1},
+                @{Path = $nvidiaPath; Name = "DisableDynamicPstate"; Type = "DWord"; Value = 1}
+            )
+            
+            foreach ($setting in $nvidiaSettings) {
+                try {
+                    Set-ItemProperty -Path $setting.Path -Name $setting.Name -Value $setting.Value -Force -ErrorAction SilentlyContinue
+                } catch {
+                    Write-Host "Failed to set NVIDIA setting $($setting.Name)" -ForegroundColor Red
+                }
+            }
+        }
         
-        $nvidiaSettings = @(
-            @{Path = $nvidiaPath; Name = "UsePlatformClock"; Type = "DWord"; Value = 0},
-            @{Path = $nvidiaPath; Name = "EnableGR535"; Type = "DWord"; Value = 1},
-            @{Path = $nvidiaPath; Name = "DisableDynamicPstate"; Type = "DWord"; Value = 1}
+        # General GPU optimizations
+        $gpuSettings = @(
+            @{Path = "HKLM:\SOFTWARE\Microsoft\DirectX"; Name = "UseD3D9"; Type = "DWord"; Value = 1},
+            @{Path = "HKLM:\SOFTWARE\Microsoft\DirectX"; Name = "UseD3D10"; Type = "DWord"; Value = 1},
+            @{Path = "HKLM:\SOFTWARE\Microsoft\DirectX"; Name = "UseD3D11"; Type = "DWord"; Value = 1}
         )
         
-        foreach ($setting in $nvidiaSettings) {
-            Set-ItemProperty -Path $setting.Path -Name $setting.Name -Value $setting.Value -Force -ErrorAction SilentlyContinue
+        foreach ($setting in $gpuSettings) {
+            try {
+                if (-not (Test-Path $setting.Path)) {
+                    New-Item -Path $setting.Path -Force | Out-Null
+                }
+                Set-ItemProperty -Path $setting.Path -Name $setting.Name -Value $setting.Value -Force -ErrorAction Stop
+            } catch {
+                Write-Host "Failed to set GPU setting $($setting.Name)" -ForegroundColor Red
+            }
         }
-    }
-    
-    # General GPU optimizations
-    $gpuSettings = @(
-        @{Path = "HKLM:\SOFTWARE\Microsoft\DirectX"; Name = "UseD3D9"; Type = "DWord"; Value = 1},
-        @{Path = "HKLM:\SOFTWARE\Microsoft\DirectX"; Name = "UseD3D10"; Type = "DWord"; Value = 1},
-        @{Path = "HKLM:\SOFTWARE\Microsoft\DirectX"; Name = "UseD3D11"; Type = "DWord"; Value = 1}
-    )
-    
-    foreach ($setting in $gpuSettings) {
-        if (-not (Test-Path $setting.Path)) {
-            New-Item -Path $setting.Path -Force | Out-Null
-        }
-        Set-ItemProperty -Path $setting.Path -Name $setting.Name -Value $setting.Value -Force
+    } catch {
+        Write-Host "GPU optimization failed: $_" -ForegroundColor Red
     }
 }
 
@@ -132,15 +135,17 @@ function Optimize-GPU {
 function Optimize-Network {
     Write-Host "`nOptimizing network settings for gaming..." -ForegroundColor Green
     
-    # Disable Nagle's algorithm
-    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\" -Name "TcpAckFrequency" -Value 1 -ErrorAction SilentlyContinue
-    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\" -Name "TCPNoDelay" -Value 1 -ErrorAction SilentlyContinue
-    
-    # Network throttling index
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Name "NetworkThrottlingIndex" -Value 0xFFFFFFFF -Force
-    
-    # Gaming DCOM priority
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Ole" -Name "DefaultLaunchPermission" -Type "Binary" -Value ([byte[]](0x01,0x00,0x04,0x80)) -Force
+    try {
+        # Network throttling index
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Name "NetworkThrottlingIndex" -Value 0xFFFFFFFF -Force -ErrorAction SilentlyContinue
+        
+        # Gaming DCOM priority
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Ole" -Name "DefaultLaunchPermission" -Type "Binary" -Value ([byte[]](0x01,0x00,0x04,0x80)) -Force -ErrorAction SilentlyContinue
+        
+        Write-Host "Network optimizations applied!" -ForegroundColor Green
+    } catch {
+        Write-Host "Network optimization failed: $_" -ForegroundColor Red
+    }
 }
 
 # Disable Non-Essential Services
@@ -159,9 +164,12 @@ function Disable-NonEssentialServices {
     
     foreach ($service in $servicesToDisable) {
         try {
-            Set-Service -Name $service -StartupType Disabled -ErrorAction SilentlyContinue
-            Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
-            Write-Host "Disabled: $service" -ForegroundColor Yellow
+            $serviceObj = Get-Service -Name $service -ErrorAction SilentlyContinue
+            if ($serviceObj) {
+                Set-Service -Name $service -StartupType Disabled -ErrorAction SilentlyContinue
+                Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
+                Write-Host "Disabled: $service" -ForegroundColor Yellow
+            }
         } catch {
             Write-Host "Could not disable: $service" -ForegroundColor Red
         }
@@ -181,10 +189,14 @@ function Optimize-GameSettings {
     )
     
     foreach ($setting in $gameSettings) {
-        if (-not (Test-Path $setting.Path)) {
-            New-Item -Path $setting.Path -Force | Out-Null
+        try {
+            if (-not (Test-Path $setting.Path)) {
+                New-Item -Path $setting.Path -Force | Out-Null
+            }
+            Set-ItemProperty -Path $setting.Path -Name $setting.Name -Value $setting.Value -Force -ErrorAction Stop
+        } catch {
+            Write-Host "Failed to set game setting: $($setting.Name)" -ForegroundColor Red
         }
-        Set-ItemProperty -Path $setting.Path -Name $setting.Name -Value $setting.Value -Force
     }
 }
 
@@ -192,24 +204,29 @@ function Optimize-GameSettings {
 function Optimize-SystemPerformance {
     Write-Host "`nOptimizing system performance..." -ForegroundColor Green
     
-    # Disable visual effects
-    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" -Name "VisualFXSetting" -Type "DWord" -Value 2
-    
-    # Performance registry tweaks
-    $performanceTweaks = @(
-        @{Path = "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management"; Name = "PreFetchParameters"; Type = "DWord"; Value = 0},
-        @{Path = "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management"; Name = "ClearPageFileAtShutdown"; Type = "DWord"; Value = 0},
-        @{Path = "HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl"; Name = "Win32PrioritySeparation"; Type = "DWord"; Value = 38},
-        @{Path = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile"; Name = "SystemResponsiveness"; Type = "DWord"; Value = 0},
-        @{Path = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games"; Name = "GPU Priority"; Type = "DWord"; Value = 8},
-        @{Path = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games"; Name = "Priority"; Type = "DWord"; Value = 6}
-    )
-    
-    foreach ($tweak in $performanceTweaks) {
-        if (-not (Test-Path $tweak.Path)) {
-            New-Item -Path $tweak.Path -Force | Out-Null
+    try {
+        # Performance registry tweaks
+        $performanceTweaks = @(
+            @{Path = "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management"; Name = "PreFetchParameters"; Type = "DWord"; Value = 0},
+            @{Path = "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management"; Name = "ClearPageFileAtShutdown"; Type = "DWord"; Value = 0},
+            @{Path = "HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl"; Name = "Win32PrioritySeparation"; Type = "DWord"; Value = 38},
+            @{Path = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile"; Name = "SystemResponsiveness"; Type = "DWord"; Value = 0},
+            @{Path = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games"; Name = "GPU Priority"; Type = "DWord"; Value = 8},
+            @{Path = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games"; Name = "Priority"; Type = "DWord"; Value = 6}
+        )
+        
+        foreach ($tweak in $performanceTweaks) {
+            try {
+                if (-not (Test-Path $tweak.Path)) {
+                    New-Item -Path $tweak.Path -Force | Out-Null
+                }
+                Set-ItemProperty -Path $tweak.Path -Name $tweak.Name -Value $tweak.Value -Force -ErrorAction Stop
+            } catch {
+                Write-Host "Failed to set performance tweak: $($tweak.Name)" -ForegroundColor Red
+            }
         }
-        Set-ItemProperty -Path $tweak.Path -Name $tweak.Name -Value $tweak.Value -Force
+    } catch {
+        Write-Host "System performance optimization failed: $_" -ForegroundColor Red
     }
 }
 
@@ -220,14 +237,12 @@ function Clean-TempFiles {
     $cleanPaths = @(
         "$env:TEMP\*",
         "$env:WINDIR\Temp\*",
-        "$env:LOCALAPPDATA\Temp\*",
-        "$env:LOCALAPPDATA\Microsoft\Windows\INetCache\*",
-        "$env:LOCALAPPDATA\Microsoft\Windows\INetCookies\*"
+        "$env:LOCALAPPDATA\Temp\*"
     )
     
     foreach ($path in $cleanPaths) {
         try {
-            Remove-Item $path -Recurse -Force -ErrorAction SilentlyContinue
+            Get-ChildItem -Path $path -Recurse -ErrorAction SilentlyContinue | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
         } catch {
             # Continue on error
         }
@@ -235,42 +250,33 @@ function Clean-TempFiles {
     
     # Clear DNS cache
     ipconfig /flushdns | Out-Null
+    Write-Host "Temporary files cleaned!" -ForegroundColor Green
 }
 
 # Final Optimizations
 function Apply-FinalOptimizations {
     Write-Host "`nApplying final optimizations..." -ForegroundColor Green
     
-    # Disable Windows features that impact gaming
-    $features = @(
-        "Printing-PrintToPDFServices-Features",
-        "Printing-XPSServices-Features",
-        "WorkFolders-Client"
-    )
-    
-    foreach ($feature in $features) {
-        try {
-            Disable-WindowsOptionalFeature -Online -FeatureName $feature -NoRestart -ErrorAction SilentlyContinue
-        } catch {
-            # Continue on error
-        }
-    }
-    
-    # Set process priority
-    $scriptBlock = {
-        $processes = Get-Process | Where-Object { $_.ProcessName -like "*game*" -or $_.ProcessName -like "*steam*" -or $_.ProcessName -like "*epic*" }
-        foreach ($process in $processes) {
-            try {
-                $process.PriorityClass = "High"
-            } catch {
-                # Continue on error
+    try {
+        # Set process priority script for startup
+        $scriptBlock = @"
+            `$processes = Get-Process | Where-Object { `$_.ProcessName -like "*game*" -or `$_.ProcessName -like "*steam*" -or `$_.ProcessName -like "*epic*" }
+            foreach (`$process in `$processes) {
+                try {
+                    `$process.PriorityClass = "High"
+                } catch {
+                    # Continue on error
+                }
             }
-        }
+"@
+        
+        # Register script to run at logon for ongoing optimization
+        $startupPath = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\GameOptimizer.ps1"
+        $scriptBlock | Out-File -FilePath $startupPath -Encoding UTF8 -Force
+        Write-Host "Startup optimizer created!" -ForegroundColor Green
+    } catch {
+        Write-Host "Final optimizations failed: $_" -ForegroundColor Red
     }
-    
-    # Register script to run at logon for ongoing optimization
-    $startupPath = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\GameOptimizer.ps1"
-    $scriptBlock.ToString() | Out-File -FilePath $startupPath -Encoding UTF8
 }
 
 # Main Execution
@@ -303,16 +309,24 @@ function Main {
     Write-Host "`nSome changes require a restart to take effect." -ForegroundColor Cyan
     
     # Prompt for restart
-    $restart = Read-Host "`nRestart now? (y/n)"
-    if ($restart -eq 'y' -or $restart -eq 'Y') {
-        Restart-Computer -Force
+    try {
+        $restart = Read-Host "`nRestart now? (y/n)"
+        if ($restart -eq 'y' -or $restart -eq 'Y') {
+            Restart-Computer -Force
+        }
+    } catch {
+        Write-Host "Could not restart automatically. Please restart manually." -ForegroundColor Yellow
     }
 }
 
 # Execution
 try {
+    # Set execution policy first
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force -ErrorAction SilentlyContinue
     Main
 } catch {
     Write-Host "An error occurred: $_" -ForegroundColor Red
     Write-Host "Please run the script again or check system compatibility." -ForegroundColor Yellow
+    Write-Host "Press any key to exit..." -ForegroundColor Gray
+    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 }
