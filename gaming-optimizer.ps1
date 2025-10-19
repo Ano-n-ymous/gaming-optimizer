@@ -129,7 +129,7 @@ function Set-NuclearRegistry {
     
     $allPaths = @($Path) + $AlternativePaths
     
-    foreach $regPath in $allPaths {
+    foreach ($regPath in $allPaths) {
         try {
             # Method 1: PowerShell registry provider
             if (-not (Test-Path $regPath)) {
@@ -165,7 +165,7 @@ function Stop-NuclearService {
     
     $allNames = @($ServiceName) + $AlternativeNames
     
-    foreach $service in $allNames {
+    foreach ($service in $allNames) {
         try {
             # Method 1: PowerShell Stop-Service
             Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
@@ -191,16 +191,11 @@ function Stop-NuclearService {
 
 # PHASE 1: NUCLEAR POWER PLAN
 Write-Host "`n[1/15] ACTIVATING NUCLEAR POWER PLAN..." -ForegroundColor Green
-$powerMethods = @(
-    'powercfg -duplicatescheme 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c',
-    'powercfg -changename $matches[1] "ULTIMATE GAMING" "MAXIMUM PERFORMANCE"',
-    'powercfg -setactive $matches[1]',
-    'powercfg -setacvalueindex $matches[1] SUB_PROCESSOR 54533251-82be-4824-96c1-47b60b740d00 893dee8e-2bef-41e0-89c6-b55d0929964c 100',
-    'powercfg -setdcvalueindex $matches[1] SUB_PROCESSOR 54533251-82be-4824-96c1-47b60b740d00 893dee8e-2bef-41e0-89c6-b55d0929964c 100'
-)
-
-foreach ($method in $powerMethods) {
-    Invoke-NuclearCommand -Command $method -Description "Power config" -AlternativeMethods @()
+$powerPlanOutput = powercfg -duplicatescheme 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 2>$null
+if ($powerPlanOutput -match "([a-f0-9-]{36})") {
+    $guid = $matches[1]
+    Invoke-NuclearCommand -Command "powercfg -changename $guid 'ULTIMATE GAMING' 'MAXIMUM PERFORMANCE'" -Description "Creating power plan"
+    Invoke-NuclearCommand -Command "powercfg -setactive $guid" -Description "Activating power plan"
 }
 
 # PHASE 2: CPU MAXIMIZATION - ALL METHODS
